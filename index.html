@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MetaRoK Optimizer — Open Field</title>
+<style>
+:root{font-family:Inter,system-ui,Arial,sans-serif;color:#edf2f7;background:#101722;--panel:#192434;--line:#2c3a4c;--muted:#9eacbd;--accent:#e4ad57}
+*{box-sizing:border-box}body{margin:0}header{padding:26px max(18px,calc((100vw - 1100px)/2));background:#151f2d;border-bottom:1px solid var(--line)}
+main{max-width:1100px;margin:auto;padding:22px 16px 60px}.eyebrow{color:var(--accent);font-size:12px;letter-spacing:.14em;text-transform:uppercase}h1{margin:7px 0;font-size:clamp(25px,5vw,38px)}p,.muted{color:var(--muted)}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}.tabs button,button,.btn{border:1px solid var(--line);background:#202e40;color:#edf2f7;border-radius:9px;padding:10px 13px;cursor:pointer}.tabs button.active,.primary{background:var(--accent);border-color:var(--accent);color:#18202b;font-weight:700}.view{display:none}.view.active{display:block}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}.card{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:15px;margin-bottom:12px}.row{display:flex;align-items:center;justify-content:space-between;gap:12px}.tag{font-size:11px;border:1px solid var(--line);border-radius:99px;padding:4px 8px;color:var(--muted)}label{display:block;font-size:13px;margin:8px 0;color:#dce5ef}input,select{accent-color:var(--accent)}input[type=text],input[type=number],select{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:#111b28;color:#fff;margin-top:5px}.commander{display:flex;gap:9px;align-items:center;padding:9px;border:1px solid var(--line);border-radius:9px}.commander input{width:auto}.small{font-size:12px}.score{font-size:26px;font-weight:800;color:var(--accent)}.march{border-left:3px solid var(--accent)}a{color:#f0c77e}button:focus,input:focus,select:focus{outline:2px solid var(--accent);outline-offset:2px}
+</style></head><body>
+<header><div class="eyebrow">Rise of Kingdoms · Open Field</div><h1>MetaRoK Optimizer</h1><div class="muted">Construis tes marches selon tes commandants, tes sets et la méta.</div></header>
+<main>
+<div class="row"><div><b>Profil joueur local</b><div class="small muted">Les choix restent dans ce navigateur (prototype).</div></div><span class="tag">V1 exportable</span></div>
+<nav class="tabs"><button class="active" data-tab="commanders">Commandants</button><button data-tab="gear">Mes sets</button><button data-tab="tier">Tierlist</button><button data-tab="optimizer">Optimisation</button></nav>
+<section id="commanders" class="view active">
+ <div class="card"><div class="row"><h2>Mes commandants</h2><span id="ownedCount" class="tag"></span></div><input id="search" type="text" placeholder="Rechercher un commandant…"><div class="row" style="justify-content:flex-start;margin:10px 0"><button id="all">Tout sélectionner</button><button id="none">Tout désélectionner</button></div><div id="commanderList" class="grid"></div></div>
+</section>
+<section id="gear" class="view">
+ <div class="card"><h2>Inventaire par sets</h2><p class="small">Indique le nombre de sets complets et leur qualité globale. V1 : notation manuelle indicative ; la gestion pièce par pièce sera ajoutée ensuite.</p><div id="gearList" class="grid"></div></div>
+</section>
+<section id="tier" class="view">
+ <div class="card"><div class="row"><h2>Marches MetaRoK · Open Field</h2><span class="tag" id="syncStatus">Données de départ</span></div><p class="small">Les rangs ci-dessous reprennent l'ordre des compositions affichées par MetaRoK pour 5, 6 et 7 marches. Les tiers et la liste exhaustive des 38 compositions Open Field doivent être synchronisés depuis les fiches officielles avant de considérer cette tierlist comme complète.</p><div id="marchList"></div><p><a target="_blank" rel="noopener" href="https://meta-rok.com/marches/">Ouvrir MetaRoK — Meta Marches ↗</a></p></div>
+</section>
+<section id="optimizer" class="view">
+ <div class="card"><h2>Paramètres</h2><label>Nombre de marches<select id="count"><option>5</option><option>6</option><option>7</option></select></label><label>Stratégie : <b id="strategyLabel">Équilibrée</b><input id="priority" type="range" min="0" max="100" value="50"></label><div class="row small muted"><span>Puissance globale</span><span>Concentration des meilleurs sets</span></div><label><input id="playability" type="checkbox" checked> Tenir compte de la jouabilité (coefficient provisoire)</label><button id="calculate" class="primary">Calculer mes marches</button></div><div id="results"></div>
+</section>
+<p class="small muted">Prototype non affilié à MetaRoK ou Lilith Games. Les scores ne représentent pas des dégâts réels en jeu.</p>
+</main>
+<script type="module">
+import data from './data/marches.json' with {type:'json'};
+const commanders=['Sun Tzu','Bai Qi','Yi To','Liu Che','Qin Shi Huang','Zhuge Liang','Arthur Pendragon','Ivan IV','Achilles','Gang Gamchan','Alp Arslan','Hermann','Philip II','Yi Seong-Gye'];
+const owned=new Set(JSON.parse(localStorage.getItem('mr-owned')||JSON.stringify(commanders)));
+const gear=JSON.parse(localStorage.getItem('mr-gear')||JSON.stringify([{type:'Infanterie',qty:1,quality:75},{type:'Cavalerie',qty:1,quality:75},{type:'Archers',qty:1,quality:75},{type:'Polyvalent',qty:0,quality:70}]));
+const $=id=>document.getElementById(id);
+function save(){localStorage.setItem('mr-owned',JSON.stringify([...owned]));localStorage.setItem('mr-gear',JSON.stringify(gear))}
+function renderCommanders(){let q=$('search').value.toLowerCase();$('commanderList').innerHTML='';commanders.filter(x=>x.toLowerCase().includes(q)).forEach(name=>{let l=document.createElement('label');l.className='commander';l.innerHTML=`<input type="checkbox" ${owned.has(name)?'checked':''}><span>${name}</span>`;l.querySelector('input').onchange=e=>{e.target.checked?owned.add(name):owned.delete(name);save();renderCommanders()};$('commanderList').append(l)});$('ownedCount').textContent=`${owned.size} / ${commanders.length} possédés`}
+function renderGear(){$('gearList').innerHTML='';gear.forEach((g,i)=>{let c=document.createElement('div');c.className='card';c.innerHTML=`<b>${g.type}</b><label>Nombre de sets<input type="number" min="0" max="7" value="${g.qty}" data-q="${i}"></label><label>Qualité : <span>${g.quality}</span>/100<input type="range" min="0" max="100" value="${g.quality}" data-v="${i}"></label>`;$('gearList').append(c)});$('gearList').querySelectorAll('[data-q]').forEach(x=>x.onchange=()=>{gear[x.dataset.q].qty=Math.max(0,Math.min(7,+x.value||0));save();renderGear()});$('gearList').querySelectorAll('[data-v]').forEach(x=>x.oninput=()=>{gear[x.dataset.v].quality=+x.value;x.previousElementSibling.querySelector('span').textContent=x.value;save()})}
+function renderMarches(){ $('marchList').innerHTML='';data.marches.forEach(m=>{let c=document.createElement('div');c.className='card';c.innerHTML=`<div class="row"><b>${m.name}</b><span class="tag">${m.formation} · #${m.rank}</span></div><div class="small muted">${m.tier}</div><a class="small" target="_blank" rel="noopener" href="${m.url}">Fiche MetaRoK ↗</a>`;$('marchList').append(c)})}
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===b.dataset.tab))});
+$('search').oninput=renderCommanders;$('all').onclick=()=>{commanders.forEach(x=>owned.add(x));save();renderCommanders()};$('none').onclick=()=>{owned.clear();save();renderCommanders()};
+$('priority').oninput=()=>{$('strategyLabel').textContent=+$('priority').value<35?'Puissance globale':+$('priority').value>65?'Concentration':'Équilibrée'};
+$('calculate').onclick=()=>{
+ const n=+$('count').value,p=+$('priority').value/100,play=$('playability').checked;
+ const candidates=data.marches.filter(m=>{let [a,b]=m.name.split(' + ');return owned.has(a)&&owned.has(b)});
+ let best=null;
+ function search(start,chosen,used,stock){if(chosen.length===n){let mean=chosen.reduce((s,x)=>s+x.q,0)/n;let top=chosen.reduce((s,x)=>s+x.base*x.q/100,0)/n;let variance=chosen.reduce((s,x)=>s+(x.q-mean)**2,0)/n;let score=(1-p)*mean+p*(top*0.8+chosen.reduce((s,x)=>s+x.base,0)/n*.2)-p*variance/200;if(!best||score>best.score)best={score,chosen:[...chosen]};return}
+ for(let i=start;i<candidates.length;i++){let m=candidates[i], [a,b]=m.name.split(' + ');if(used.has(a)||used.has(b))continue;let types=['Infanterie','Cavalerie','Archers','Polyvalent'].filter(t=>stock[t]>0);for(let t of types){let q=gear.find(g=>g.type===t).quality;stock[t]--;search(i+1,[...chosen,{...m,q,type:t,base:100-(m.rank-1)*2+(play?5:0)}],new Set([...used,a,b]),stock);stock[t]++}}
+ }
+ let stock={};gear.forEach(g=>stock[g.type]=g.qty);search(0,[],new Set(),stock);
+ if(!best){$('results').innerHTML='<div class="card">Impossible de constituer '+n+' marches avec les commandants et les sets actuellement renseignés. Vérifie ton inventaire.</div>';return}
+ best.chosen.sort((a,b)=>b.base*b.q-a.base*a.q);$('results').innerHTML=`<div class="card"><div class="small muted">Indice global indicatif</div><div class="score">${best.score.toFixed(1)} / 100</div><div class="small muted">La sélection respecte l'unicité des commandants et la quantité de sets disponibles.</div></div>`+best.chosen.map((m,i)=>`<div class="card march"><div class="row"><b>Marche ${i+1} — ${m.name}</b><span class="tag">Rang #${m.rank} · ${m.formation}</span></div><p class="small">Set attribué : <b>${m.type}</b> · qualité ${m.q}/100</p><p class="small">Score de priorité indicatif : ${(m.base*m.q/100).toFixed(1)}</p><a target="_blank" rel="noopener" href="${m.url}">Voir la fiche MetaRoK ↗</a></div>`).join('')+'<p class="small muted">Limite : cette V1 ne sait pas encore optimiser simultanément les formations 5/6/7 en choisissant une liste cohérente unique, et ne connaît pas les types exacts de toutes les compositions. Le moteur doit être affiné avec les données détaillées des fiches.</p>';
+};
+renderCommanders();renderGear();renderMarches();
+</script></body></html>
