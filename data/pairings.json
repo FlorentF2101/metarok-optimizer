@@ -1,0 +1,112 @@
+{
+  "source": "Références de départ issues du catalogue V3; validation MetaRoK requise",
+  "note": "Catalogue incomplet de démonstration. Les tiers et types de troupes ne sont pas certifiés. Ajouter uniquement des pairings explicitement publiés par MetaRoK.",
+  "pairings": [
+    {
+      "id": "5-1",
+      "formation": "5 marches",
+      "rank": 1,
+      "name": "Sun Tzu + Bai Qi",
+      "tier": "À vérifier",
+      "url": "https://meta-rok.com/tierlist/field/sun-bq/",
+      "formations": [
+        "5 marches",
+        "6 marches",
+        "7 marches"
+      ],
+      "troop_type": "À confirmer"
+    },
+    {
+      "id": "5-2",
+      "formation": "5 marches",
+      "rank": 2,
+      "name": "Yi To + Liu Che",
+      "tier": "À vérifier",
+      "url": "https://meta-rok.com/tierlist/field/yi-liu/",
+      "formations": [
+        "5 marches",
+        "6 marches",
+        "7 marches"
+      ],
+      "troop_type": "À confirmer"
+    },
+    {
+      "id": "5-3",
+      "formation": "5 marches",
+      "rank": 3,
+      "name": "Qin Shi Huang + Zhuge Liang",
+      "tier": "À vérifier",
+      "url": "https://meta-rok.com/tierlist/field/qin-zl/",
+      "formations": [
+        "5 marches",
+        "6 marches"
+      ],
+      "troop_type": "À confirmer"
+    },
+    {
+      "id": "5-4",
+      "formation": "5 marches",
+      "rank": 4,
+      "name": "Arthur Pendragon + Ivan IV",
+      "tier": "À vérifier",
+      "url": "https://meta-rok.com/tierlist/field/arthur-ivan/",
+      "formations": [
+        "5 marches",
+        "6 marches",
+        "7 marches"
+      ],
+      "troop_type": "À confirmer"
+    },
+    {
+      "id": "5-5",
+      "formation": "5 marches",
+      "rank": 5,
+      "name": "Achilles + Gang Gamchan",
+      "tier": "À vérifier",
+      "url": "https://meta-rok.com/tierlist/field/achilles-gamchan/",
+      "formations": [
+        "5 marches",
+        "6 marches",
+        "7 marches"
+      ],
+      "troop_type": "À confirmer"
+    },
+    {
+      "id": "6-3",
+      "formation": "6 marches",
+      "rank": 3,
+      "name": "Alp Arslan + Hermann",
+      "tier": "À vérifier",
+      "url": "https://meta-rok.com/tierlist/field/alp-hermann/",
+      "formations": [
+        "6 marches",
+        "7 marches"
+      ],
+      "troop_type": "À confirmer"
+    },
+    {
+      "id": "7-1",
+      "formation": "7 marches",
+      "rank": 1,
+      "name": "Zhuge Liang + Philip II",
+      "tier": "À vérifier",
+      "url": "https://meta-rok.com/tierlist/field/zl-philip/",
+      "formations": [
+        "7 marches"
+      ],
+      "troop_type": "À confirmer"
+    },
+    {
+      "id": "7-3",
+      "formation": "7 marches",
+      "rank": 3,
+      "name": "Qin Shi Huang + Yi Seong-Gye",
+      "tier": "À vérifier",
+      "url": "https://meta-rok.com/tierlist/field/qin-ysg/",
+      "formations": [
+        "7 marches"
+      ],
+      "troop_type": "À confirmer"
+    }
+  ]
+}
