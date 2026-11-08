@@ -1,8 +1,7 @@
-
 {
   "source": "https://meta-rok.com/marches/",
   "retrieved_at": "2026-11-08",
-  "status": "seed-from-public-marches-page",
+  "status": "partial-seed; complete tiers and pairings still require authorized data source",
   "marches": [
     {
       "id": "5-1",
@@ -40,6 +39,110 @@
       "id": "5-5",
       "formation": "5 marches",
       "rank": 5,
+      "name": "Achilles + Gang Gamchan",
+      "tier": "À synchroniser",
+      "url": "https://meta-rok.com/tierlist/field/achilles-gamchan/"
+    },
+    {
+      "id": "6-1",
+      "formation": "6 marches",
+      "rank": 1,
+      "name": "Sun Tzu + Bai Qi",
+      "tier": "À synchroniser",
+      "url": "https://meta-rok.com/tierlist/field/sun-bq/"
+    },
+    {
+      "id": "6-2",
+      "formation": "6 marches",
+      "rank": 2,
+      "name": "Achilles + Gang Gamchan",
+      "tier": "À synchroniser",
+      "url": "https://meta-rok.com/tierlist/field/achilles-gamchan/"
+    },
+    {
+      "id": "6-3",
+      "formation": "6 marches",
+      "rank": 3,
+      "name": "Alp Arslan + Hermann",
+      "tier": "À synchroniser",
+      "url": "https://meta-rok.com/tierlist/field/alp-hermann/"
+    },
+    {
+      "id": "6-4",
+      "formation": "6 marches",
+      "rank": 4,
+      "name": "Qin Shi Huang + Zhuge Liang",
+      "tier": "À synchroniser",
+      "url": "https://meta-rok.com/tierlist/field/qin-zl/"
+    },
+    {
+      "id": "6-5",
+      "formation": "6 marches",
+      "rank": 5,
+      "name": "Yi To + Liu Che",
+      "tier": "À synchroniser",
+      "url": "https://meta-rok.com/tierlist/field/yi-liu/"
+    },
+    {
+      "id": "6-6",
+      "formation": "6 marches",
+      "rank": 6,
+      "name": "Arthur Pendragon + Ivan IV",
+      "tier": "À synchroniser",
+      "url": "https://meta-rok.com/tierlist/field/arthur-ivan/"
+    },
+    {
+      "id": "7-1",
+      "formation": "7 marches",
+      "rank": 1,
+      "name": "Zhuge Liang + Philip II",
+      "tier": "À synchroniser",
+      "url": "https://meta-rok.com/tierlist/field/zl-philip/"
+    },
+    {
+      "id": "7-2",
+      "formation": "7 marches",
+      "rank": 2,
+      "name": "Alp Arslan + Hermann",
+      "tier": "À synchroniser",
+      "url": "https://meta-rok.com/tierlist/field/alp-hermann/"
+    },
+    {
+      "id": "7-3",
+      "formation": "7 marches",
+      "rank": 3,
+      "name": "Qin Shi Huang + Yi Seong-Gye",
+      "tier": "À synchroniser",
+      "url": "https://meta-rok.com/tierlist/field/qin-ysg/"
+    },
+    {
+      "id": "7-4",
+      "formation": "7 marches",
+      "rank": 4,
+      "name": "Sun Tzu + Bai Qi",
+      "tier": "À synchroniser",
+      "url": "https://meta-rok.com/tierlist/field/sun-bq/"
+    },
+    {
+      "id": "7-5",
+      "formation": "7 marches",
+      "rank": 5,
+      "name": "Yi To + Liu Che",
+      "tier": "À synchroniser",
+      "url": "https://meta-rok.com/tierlist/field/yi-liu/"
+    },
+    {
+      "id": "7-6",
+      "formation": "7 marches",
+      "rank": 6,
+      "name": "Arthur Pendragon + Ivan IV",
+      "tier": "À synchroniser",
+      "url": "https://meta-rok.com/tierlist/field/arthur-ivan/"
+    },
+    {
+      "id": "7-7",
+      "formation": "7 marches",
+      "rank": 7,
       "name": "Achilles + Gang Gamchan",
       "tier": "À synchroniser",
       "url": "https://meta-rok.com/tierlist/field/achilles-gamchan/"
