@@ -1,35 +1,50 @@
-<!doctype html>
-<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MetaRoK Optimizer V4</title>
-<style>
-:root{color-scheme:dark;font-family:Inter,system-ui,Arial;background:#101722;color:#edf2f7;--panel:#192434;--line:#2c3a4c;--muted:#aab6c5;--accent:#e4ad57}
-*{box-sizing:border-box}body{margin:0}header{padding:24px max(16px,calc((100vw - 1100px)/2));background:#151f2d;border-bottom:1px solid var(--line)}h1{margin:0;color:var(--accent)}header p{color:var(--muted);margin-bottom:0}main{max-width:1100px;margin:24px auto;padding:0 16px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin:16px 0}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}.set,.commander,.result{border:1px solid var(--line);border-radius:10px;padding:13px}.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}button{background:var(--accent);color:#171717;border:0;border-radius:9px;padding:11px 16px;font-weight:700;cursor:pointer}button.secondary{background:#304158;color:white}input,select{background:#101722;color:white;border:1px solid #45566b;border-radius:8px;padding:9px;max-width:100%}input[type=range]{width:100%;accent-color:var(--accent)}.commander-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:8px}.commander{display:flex;align-items:center;gap:8px;cursor:pointer}.commander:has(input:checked){border-color:var(--accent);background:#263448}.commander input{width:17px;height:17px}.score{font-size:22px;color:var(--accent);font-weight:800}.tag{font-size:12px;color:#c7d4e4;background:#26364a;border-radius:20px;padding:4px 8px}.warning{color:#ffc477}.good{color:#91d7a8}.result{margin:10px 0}.result h3{margin:4px 0 10px}.pill{display:inline-block;padding:4px 8px;border-radius:20px;background:#304158;font-size:12px;margin:2px}.hidden{display:none}@media(max-width:600px){.commander-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-</style></head><body>
-<header><h1>MetaRoK Optimizer</h1><p>V4 — Adaptation des pairings MetaRoK à ton compte · Open Field</p></header>
-<main>
-<section class="panel"><h2>1. Tes équipements disponibles</h2><p class="muted">Ajoute chaque set possédé. Sa note sur 10 inclut l'équipement et les attirails. Chaque set ne peut être attribué qu'une fois.</p><div class="row"><label>Type de troupes <select id="newType"><option>Infanterie</option><option>Cavalerie</option><option>Archers</option><option>Mixte</option></select></label><button id="addSet">+ Ajouter un set</button></div><div id="sets" class="grid" style="margin-top:14px"></div></section>
-<section class="panel"><h2>2. Tes commandants</h2><p class="muted">Sélectionne les commandants que tu possèdes. Recherche et filtres permettent de les retrouver rapidement. Les portraits pourront être ajoutés à partir de ressources autorisées dans une prochaine étape.</p><div class="row"><input id="search" placeholder="Rechercher…" style="flex:1;min-width:180px"><select id="filter"><option value="Tous">Toutes les listes</option><option>Infanterie</option><option>Cavalerie</option><option>Archers</option></select></div><p id="ownedCount" class="muted">0 sélectionné(s)</p><div id="commanders" class="commander-grid">Chargement…</div></section>
-<section class="panel"><h2>3. Ton objectif Open Field</h2><p class="muted">Choisis le nombre de marches à viser ou laisse le moteur déterminer combien sont réalisables. Le moteur ne crée pas de pairing : il utilise uniquement les associations présentes dans le catalogue.</p><div class="row"><label>Nombre souhaité <select id="target"><option value="auto">Automatique</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option></select></label><button id="calculate">Optimiser mes marches</button></div><div id="results" aria-live="polite"></div></section>
-<section class="panel"><h2>4. Référentiel des pairings</h2><p class="muted">Chaque pairing est issu de la liste de départ de la V3 et doit être vérifié contre la publication MetaRoK correspondante. Les rangs de formation ne sont pas des tiers S/A/B/C/D. Le type de troupes et le tier doivent être renseignés à partir de la source avant de considérer une recommandation comme compétitive.</p><div id="catalogue"></div></section>
-<section class="panel"><h2>Limites de cette V4 de test</h2><p class="muted">Cette version conserve l'inventaire et l'interface de la V3, ajoute un objectif de 2 à 7 marches ou automatique, déduplique les pairings entre formations et optimise l'affectation sans réutiliser de commandants ni de sets. Le catalogue disponible ne contient pour l'instant que les associations de départ (7 pairings uniques). Les tiers et types de troupes restent « à vérifier » : aucune donnée n'est inventée. Les portraits ne sont pas intégrés tant qu'une source d'images réutilisable n'est pas validée.</p></section>
-</main>
-<script>
-let commanders=[],pairings=[],sets=[],owned=new Set();
-const $=id=>document.getElementById(id);
-async function init(){try{const [c,p]=await Promise.all([fetch('./data/commanders.json').then(r=>{if(!r.ok)throw Error('commanders.json');return r.json()}),fetch('./data/pairings.json').then(r=>{if(!r.ok)throw Error('pairings.json');return r.json()})]);commanders=c.commanders||[];pairings=p.pairings||[];renderCommanders();renderCatalog()}catch(e){$('commanders').textContent='Erreur de chargement : '+e.message+'. Vérifie le dossier data.'}}
-function renderCommanders(){let q=$('search').value.toLowerCase();$('commanders').innerHTML=commanders.filter(n=>n.toLowerCase().includes(q)).map(n=>`<label class="commander"><input type="checkbox" data-name="${n.replaceAll('"','&quot;')}" ${owned.has(n)?'checked':''}> <span>${n}</span></label>`).join('');$('commanders').querySelectorAll('input').forEach(x=>x.onchange=()=>{x.checked?owned.add(x.dataset.name):owned.delete(x.dataset.name);$('ownedCount').textContent=owned.size+' sélectionné(s)'});$('ownedCount').textContent=owned.size+' sélectionné(s)'}
-function renderSets(){$('sets').innerHTML=sets.map((s,i)=>`<div class="set"><div class="row" style="justify-content:space-between"><b>Set ${i+1} — ${s.type}</b><button class="secondary" data-del="${i}">Supprimer</button></div><label>Note équipement + attirails <span class="score" id="v${i}">${s.score}/10</span><input type="range" min="1" max="10" value="${s.score}" data-score="${i}"></label></div>`).join('')||'<p class="muted">Aucun set ajouté.</p>';$('sets').querySelectorAll('[data-score]').forEach(x=>x.oninput=()=>{sets[+x.dataset.score].score=+x.value;$('v'+x.dataset.score).textContent=x.value+'/10'});$('sets').querySelectorAll('[data-del]').forEach(x=>x.onclick=()=>{sets.splice(+x.dataset.del,1);renderSets()})}
-$('addSet').onclick=()=>{sets.push({type:$('newType').value,score:7});renderSets()};$('search').oninput=renderCommanders;
-function parts(p){return p.name.split(/\s*\+\s*/)}
-function renderCatalog(){$('catalogue').innerHTML=pairings.map(p=>`<div class="result"><b>${p.name}</b> <span class="pill">${p.tier}</span><span class="pill">${p.formations.join(', ')}</span><div class="muted">Type : ${p.troop_type} · <a href="${p.url}" target="_blank" rel="noopener" style="color:#e4ad57">Référence MetaRoK à vérifier</a></div></div>`).join('')}
-function calculate(){const box=$('results');box.innerHTML='';if(!sets.length){box.innerHTML='<p class="warning">Ajoute au moins un set.</p>';return}const usable=pairings.filter(p=>parts(p).length===2&&parts(p).every(n=>owned.has(n)));if(!usable.length){box.innerHTML='<p class="warning">Aucun pairing du catalogue ne correspond exactement aux commandants sélectionnés. Cela ne signifie pas qu’aucune composition n’existe : le catalogue est encore incomplet.</p>';return}
-let target=$('target').value==='auto'?Math.min(sets.length,usable.length):Number($('target').value);
-let selected=[],used=new Set(),freeSets=[...sets].map((s,i)=>({...s,index:i})).sort((a,b)=>b.score-a.score);
-usable.sort((a,b)=>a.rank-b.rank);
-for(const p of usable){if(selected.length>=target)break;const names=parts(p);if(names.some(n=>used.has(n)))continue;let options=freeSets.filter(s=>!selected.some(x=>x.set.index===s.index));if(!options.length)break;
-let set=options[0]; // Un type non confirmé ne permet pas d'affirmer une compatibilité : allocation provisoire explicitement signalée.
-used.add(names[0]);used.add(names[1]);selected.push({p,set});
+{
+  "source": "https://meta-rok.com/commanders/",
+  "retrieved_at": "2026-11-08",
+  "count": 42,
+  "note": "Liste des 42 commandants disposant d'une fiche dans le databank MetaRoK à la date de consultation. Ce n'est pas la totalité des commandants jouables de Rise of Kingdoms.",
+  "commanders": [
+    "Achilles",
+    "Alexander Nevsky",
+    "Alp Arslan",
+    "Arthur Pendragon",
+    "Ashurbanipal",
+    "Attila",
+    "Bai Qi",
+    "Belisarius",
+    "Boudica",
+    "Charles Martel",
+    "David IV",
+    "Gang Gamchan",
+    "Gorgo",
+    "Hayam Wuruk",
+    "Hector",
+    "Heraclius",
+    "Hermann",
+    "Huo Qubing",
+    "Ivan IV",
+    "Ivar",
+    "Joan of Arc",
+    "Justinian I",
+    "Liu Che",
+    "Minamoto no Yoshitsune",
+    "Philip II",
+    "Qin Shi Huang",
+    "Ragnar Lodbrok",
+    "Scipio Aemilianus",
+    "Scipio Africanus",
+    "Shajar al-Durr",
+    "Shapur I",
+    "Subutai",
+    "Sun Tzu",
+    "Tariq ibn Ziyad",
+    "Tokugawa Ieyasu",
+    "Vercingetorix",
+    "William Marshal",
+    "William Wallace",
+    "Yi Seong-Gye",
+    "Yi Sun-sin",
+    "Yi To",
+    "Zhuge Liang"
+  ]
 }
-let missing=target-selected.length;box.innerHTML=`<h3>${selected.length} marche(s) candidate(s) trouvée(s) ${target>selected.length?'sur '+target+' souhaitée(s)':''}</h3><p class="muted">Pairings disponibles dans le catalogue et commandants possédés : ${usable.length}. Les sets sont affectés du meilleur score au plus faible, sans réutilisation.</p>`+selected.map((x,i)=>`<div class="result"><div class="row" style="justify-content:space-between"><h3>Marche ${i+1} : ${x.p.name}</h3><span class="score">${x.set.score}/10</span></div><span class="pill">${x.p.tier}</span><span class="pill">Set ${x.set.index+1} — ${x.set.type}</span><p class="warning">Compatibilité de troupes et tier MetaRoK à vérifier dans la source.</p><a href="${x.p.url}" target="_blank" rel="noopener" style="color:#e4ad57">Consulter le pairing de référence</a></div>`).join('')+(missing?`<p class="warning">${missing} marche(s) non trouvée(s) dans le catalogue actuel. Il faut enrichir le référentiel avec d'autres pairings MetaRoK vérifiés.</p>`:'')+'<p class="muted">Important : cette version ne remplace pas un classement MetaRoK à jour. Elle optimise seulement parmi les pairings présents dans le catalogue et disponibles dans ton inventaire.</p>'}
-$('calculate').onclick=calculate;init();renderSets();
-</script></body></html>
